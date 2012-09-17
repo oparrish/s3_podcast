@@ -5,6 +5,8 @@ require 'aws/s3'
 
 options={}
 
+options[:language] = "en-us"
+
 opts = OptionParser.new do |opts| 	
   opts.on("-t", "--title TITLE", "Title of podcast") do |title|
     options[:title] = title
@@ -22,7 +24,11 @@ opts = OptionParser.new do |opts|
   	options[:desc] = desc
   end
   
-  opts.on("-o", "--output OUTPUT", "Output file") do |output|
+  opts.on("-n", "--lang [LANGUAGE]", "Language of feed") do |language|
+    options[:language] = language
+  end
+  
+  opts.on("-o", "--output OUTPUT", "Name of output file") do |output|
   	options[:output] = output
   end
   
@@ -45,7 +51,7 @@ opts.parse!
 version = "2.0"
 
 AWS::S3::Base.establish_connection!(
-    :access_key_id     => ENV['AMAZON_ACCESS_KEY_ID'],
+  :access_key_id     => ENV['AMAZON_ACCESS_KEY_ID'],
 	:secret_access_key => ENV['AMAZON_SECRET_ACCESS_KEY']
 )
 
@@ -55,7 +61,7 @@ content = RSS::Maker.make(version) do |m|
 	m.channel.title = options[:title]
 	m.channel.link = options[:link]
 	m.channel.description = options[:desc]
-	m.channel.language = "en-us"
+	m.channel.language = options[:language]
 	m.channel.itunes_image = options[:image]
 	m.items.do_sort = true
 	
