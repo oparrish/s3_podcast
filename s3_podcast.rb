@@ -75,6 +75,7 @@ content = RSS::Maker.make(version) do |m|
 		i.enclosure.url = i.link
 		i.enclosure.length = audio.content_length
 		i.enclosure.type = audio.content_type
+		i.encoded :content audio.metadata[:content]
   end 
 end
 
