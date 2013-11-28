@@ -63,6 +63,7 @@ content = RSS::Maker.make(version) do |m|
 	m.channel.description = options[:desc]
 	m.channel.language = options[:language]
 	m.channel.itunes_image = options[:image]
+  m.channel.itunes_author = options[:author]
 	m.items.do_sort = true
 	
 	s3_bucket.select{|object| object.key =~ /[\s\w]+\.(m4b|mp3|m4a|ogg|aac)/}.each do |audio|
@@ -70,12 +71,14 @@ content = RSS::Maker.make(version) do |m|
 		i.link = audio.url(:authenticated => false)  
 		i.title = audio.key.split(".")[0]
 		i.author = options[:author]
+    i.itunes_author = options[:author]
 		i.pubDate = audio.last_modified
 		i.guid.content = audio.etag
 		i.enclosure.url = i.link
 		i.enclosure.length = audio.content_length
 		i.enclosure.type = audio.content_type
     i.description = audio.metadata[:description]
+    i.itunes_duration = audio.metadata[:duration]
   end 
 end
 
